@@ -1,0 +1,11 @@
+DOCINTEL ENTERPRISE SERVICE LEVEL AGREEMENT (SLA)
+SECTION 9: SERVICE LEVEL GUARANTEES
+DocIntel AI guarantees a 99.9% platform availability uptime per calendar month. If monthly uptime drops below 99.9%, enterprise clients receive proportional SLA credit refunds.
+
+SECTION 10: SUPPORT RESPONSE TIMES & SEVERITY
+Priority 1 (Critical Outage): Response within 1 hour. Resolution target within 4 hours.
+Priority 2 (High Severity): Response within 4 hours.
+Priority 3 (General Inquiries): Response within 24 business hours.
+
+SECTION 11: SECURITY & DATA PROTECTION
+All customer documents uploaded to DocIntel AI are encrypted in transit via TLS 1.3 and at rest using AES-256 encryption. Customer vectors are strictly isolated.
