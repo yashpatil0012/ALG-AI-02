@@ -8,8 +8,8 @@ class Settings:
     OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
     GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
     
-    # Vector Database / Storage configuration
-    STORAGE_DIR: str = os.getenv("STORAGE_DIR", os.path.join(os.path.dirname(__file__), "..", "storage"))
+    # Vector Database / Storage configuration (Use /tmp on Vercel for write permissions)
+    STORAGE_DIR: str = os.getenv("STORAGE_DIR", "/tmp/storage" if os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME") else os.path.join(os.path.dirname(__file__), "..", "storage"))
     DEMO_DIR: str = os.getenv("DEMO_DIR", os.path.join(os.path.dirname(__file__), "..", "demo_data"))
     
     # Chunking options

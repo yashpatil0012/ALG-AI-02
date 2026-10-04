@@ -20,6 +20,17 @@ class LocalVectorStore:
         self.tfidf_matrix = None
         
         self.load_from_disk()
+        
+        # Auto-populate demo suite if empty on startup
+        if not self.documents:
+            self._auto_load_demo()
+
+    def _auto_load_demo(self):
+        try:
+            from app.services.demo_service import DemoService
+            DemoService.load_demo_data()
+        except Exception as e:
+            print(f"[VectorStore] Auto demo load error: {e}")
 
     def load_from_disk(self):
         if os.path.exists(self.meta_file):
@@ -41,6 +52,7 @@ class LocalVectorStore:
 
     def save_to_disk(self):
         try:
+            os.makedirs(self.storage_dir, exist_ok=True)
             with open(self.meta_file, 'w', encoding='utf-8') as f:
                 json.dump({k: v.model_dump() for k, v in self.documents.items()}, f, indent=2)
             with open(self.chunks_file, 'w', encoding='utf-8') as f:
@@ -101,7 +113,6 @@ class LocalVectorStore:
         
         sims = cosine_similarity(query_vec, sub_matrix).flatten()
         
-        # Only evaluate scores if there's actual similarity
         boosted_sims = []
         for idx_in_sub, orig_idx in enumerate(indices_to_consider):
             raw_score = float(sims[idx_in_sub])
@@ -117,11 +128,9 @@ class LocalVectorStore:
 
         boosted_sims.sort(key=lambda x: x[1], reverse=True)
 
-        # Document Diversity Selection
         selected_results = []
         seen_docs_count: Dict[str, int] = {}
         
-        # First pass: max 1 chunk per document
         for orig_idx, score in boosted_sims:
             if len(selected_results) >= top_k:
                 break
@@ -132,7 +141,6 @@ class LocalVectorStore:
                 selected_results.append((chunk, round(score, 4)))
                 seen_docs_count[doc_id] = 1
 
-        # Second pass: fill remaining slots if top_k not reached
         if len(selected_results) < top_k:
             already_added_ids = set(c.id for c, _ in selected_results)
             for orig_idx, score in boosted_sims:
